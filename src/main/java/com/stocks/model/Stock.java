@@ -1,12 +1,7 @@
-package com.stocks.core;
+package com.stocks.model;
 
 import java.math.BigDecimal;
-import java.util.Deque;
-import com.google.common.collect.Lists;
-import com.stocks.enums.BuySellIndicator;
 import com.stocks.enums.StockSymbol;
-import com.stocks.enums.StockType;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represent a Stock

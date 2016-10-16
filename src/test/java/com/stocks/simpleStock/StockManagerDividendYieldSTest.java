@@ -6,8 +6,8 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
-import com.stocks.core.Stock;
 import com.stocks.enums.StockSymbol;
+import com.stocks.model.Stock;
 import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
 import com.stocks.simpleStock.impl.SuperSimpleStockManager;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class StockManagerDividendYieldSTest {
 
 	@Autowired
 	private GlobalBeverageCorporationImpl globalBeverageCorp;
-	
+
 	@Test
 	public void shouldReturnZeroWhenEmptyStock(){
 		// Arrange

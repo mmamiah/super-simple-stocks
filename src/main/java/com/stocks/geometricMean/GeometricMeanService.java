@@ -2,8 +2,7 @@ package com.stocks.geometricMean;
 
 import java.math.BigDecimal;
 import java.util.List;
-import com.stocks.core.Stock;
-import com.stocks.core.Trade;
+import com.stocks.model.Stock;
 
 /**
  * Interface for GeometricMean

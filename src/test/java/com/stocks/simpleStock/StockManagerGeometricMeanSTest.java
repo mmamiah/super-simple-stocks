@@ -6,10 +6,8 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
-import com.stocks.core.Stock;
 import com.stocks.enums.BuySellIndicator;
 import com.stocks.enums.StockSymbol;
-import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
 import com.stocks.simpleStock.impl.SuperSimpleStockManager;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,9 +28,6 @@ public class StockManagerGeometricMeanSTest {
 	@Autowired
 	private SuperSimpleStockManager stockManager;
 
-	@Autowired
-	private GlobalBeverageCorporationImpl globalBeverageCorp;
-	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
@@ -44,23 +39,10 @@ public class StockManagerGeometricMeanSTest {
 	}
 
 	@Test
-	public void shouldThrowNPEWhenStockIsNullAndIndicatorIsNone(){
-		// Assert
-		exception.expect(NullPointerException.class);
-		
-		// Arrange
-		stockManager.recordTrade(null, BuySellIndicator.NONE, BigDecimal.ONE, quantityOfShare);
-
-		// Act
-		BigDecimal result = stockManager.calculateBgceGeometricMean();
-
-	}
-
-	@Test
 	public void shouldReturnGeoMeanWhenEmptyStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		stockManager.recordTrade(new Stock(), BuySellIndicator.NONE, tickerPrice, quantityOfShare);
+		stockManager.recordTrade(StockSymbol.NONE, BuySellIndicator.NONE, tickerPrice, quantityOfShare);
 
 		// Act
 		BigDecimal result = stockManager.calculateBgceGeometricMean();
@@ -74,8 +56,7 @@ public class StockManagerGeometricMeanSTest {
 	public void shouldCalculateGeoMeanWhenSingleStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.valueOf(1.265);
-		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
-		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
+		stockManager.recordTrade(StockSymbol.GIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
 
 		// Act
 		BigDecimal result = stockManager.calculateBgceGeometricMean();
@@ -89,9 +70,8 @@ public class StockManagerGeometricMeanSTest {
 	public void shouldCalculateGeoMeanWhenMultipleStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
-		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
-		stockManager.recordTrade(stockGIN, BuySellIndicator.SELL, BigDecimal.valueOf(1.863), quantityOfShare);
+		stockManager.recordTrade(StockSymbol.GIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
+		stockManager.recordTrade(StockSymbol.GIN, BuySellIndicator.SELL, BigDecimal.valueOf(1.863), quantityOfShare);
 
 		// Act
 		BigDecimal result = stockManager.calculateBgceGeometricMean();

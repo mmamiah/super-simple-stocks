@@ -1,7 +1,7 @@
 package com.stocks.stockFormulaService;
 
 import java.math.BigDecimal;
-import com.stocks.core.Stock;
+import com.stocks.model.Stock;
 import com.stocks.enums.StockType;
 
 /**

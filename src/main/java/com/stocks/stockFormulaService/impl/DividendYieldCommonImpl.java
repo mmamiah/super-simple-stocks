@@ -2,7 +2,7 @@ package com.stocks.stockFormulaService.impl;
 
 import java.math.BigDecimal;
 import com.stocks.common.StockConstants;
-import com.stocks.core.Stock;
+import com.stocks.model.Stock;
 import com.stocks.enums.StockType;
 import com.stocks.stockFormulaService.StockFormulaService;
 import org.springframework.stereotype.Service;

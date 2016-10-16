@@ -3,7 +3,7 @@ package com.stocks.stockPriceService.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import com.stocks.common.StockConstants;
-import com.stocks.core.Trade;
+import com.stocks.model.Trade;
 import com.stocks.stockPriceService.StockPriceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;

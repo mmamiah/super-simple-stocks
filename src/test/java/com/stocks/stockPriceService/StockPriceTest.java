@@ -6,13 +6,16 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
+import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import com.google.common.collect.Lists;
-import com.stocks.core.Trade;
+import com.google.common.collect.Maps;
+import com.stocks.enums.StockSymbol;
+import com.stocks.model.Trade;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -55,7 +58,7 @@ public class StockPriceTest {
 	public void shouldComputeStockPriceWhenUniqueTrade(){
 		// Arrange
 		List<Trade> trades = Lists.newArrayList();
-		Trade trade = new Trade(BigDecimal.valueOf(23.123), 1);
+		Trade trade = new Trade(StockSymbol.ALE, BigDecimal.valueOf(23.123), 1);
 		trades.add(trade);
 
 		// Act
@@ -71,7 +74,7 @@ public class StockPriceTest {
 		BigDecimal tradePrice = BigDecimal.valueOf(84.64);
 		List<Trade> trades = Lists.newArrayList();
 		for(int i=0; i<2; i++){
-			Trade trade = new Trade(tradePrice, trades.size() + 1);
+			Trade trade = new Trade(StockSymbol.POP, tradePrice, trades.size() + 1);
 			trades.add(trade);
 		}
 
@@ -89,7 +92,7 @@ public class StockPriceTest {
 		List<Trade> trades = Lists.newArrayList();
 		for(int i=0; i<3; i++){
 			double price = basePrice * (i + 1); // Sort of random price
-			Trade trade = new Trade(BigDecimal.valueOf(price), trades.size() + 1);
+			Trade trade = new Trade(StockSymbol.TEA, BigDecimal.valueOf(price), trades.size() + 1);
 			trades.add(trade);
 		}
 
@@ -99,6 +102,5 @@ public class StockPriceTest {
 		// Assert
 		assertThat(result.doubleValue() > basePrice, is(true));
 	}
-	
-	
+
 }

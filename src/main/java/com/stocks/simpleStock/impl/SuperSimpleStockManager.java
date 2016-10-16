@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.stocks.core.Stock;
-import com.stocks.core.Trade;
 import com.stocks.enums.BuySellIndicator;
 import com.stocks.enums.StockSymbol;
 import com.stocks.enums.StockType;
 import com.stocks.geometricMean.GeometricMeanService;
+import com.stocks.model.Stock;
+import com.stocks.model.Trade;
 import com.stocks.simpleStock.StockExchange;
 import com.stocks.stockFormulaService.StockFormulaService;
 import com.stocks.stockPriceService.StockPriceService;
@@ -42,11 +42,8 @@ public class SuperSimpleStockManager {
 	private StockPriceService stockPriceService;
 	
 	@Autowired
-	private StockExchange bgce;
+	private StockExchange globalBeverageCorpExchange;
 	
-	/** Map<StockSymbol, Deque<Trade>> */
-	private Map<StockSymbol, Deque<Trade>> tradeHistory = Maps.newHashMap();
-
 	private Map<StockType, StockFormulaService> stockFormulas = Maps.newHashMap();
 	
 	@Autowired
@@ -68,19 +65,13 @@ public class SuperSimpleStockManager {
 	}
 
 	/* Record a Trade for a given StockSymbol */
-	public void recordTrade(Stock stock, BuySellIndicator indicator, BigDecimal tickerPrice, int quantityOfShare){
-		Deque<Trade> trades = tradeHistory.get(stock.getSymbol());
-		if(trades == null){
-			trades = Lists.newLinkedList();
-			tradeHistory.put(stock.getSymbol(), trades);
-		}
-		Trade trade = new Trade(tickerPrice, indicator, quantityOfShare);
-		trades.addLast(trade);
+	public void recordTrade(StockSymbol stockSymbol, BuySellIndicator indicator, BigDecimal price, int quantityOfShare){
+		globalBeverageCorpExchange.recordTrade(stockSymbol, price, indicator, quantityOfShare);
 	}
 	
 	/* Calculate Stock Price based on trade recorded in pass 15 min */
 	public BigDecimal calculateStockPrice(Stock stock){
-		Deque<Trade> trades = tradeHistory.get(stock.getSymbol());
+		Deque<Trade> trades = globalBeverageCorpExchange.findTrades(stock.getSymbol());
 		if(CollectionUtils.isEmpty(trades)){
 			return BigDecimal.ZERO;
 		}
@@ -93,11 +84,11 @@ public class SuperSimpleStockManager {
 
 	/* Calculate the Geometric Mean on based BGCE Stocks */
 	public BigDecimal calculateBgceGeometricMean(){
-		if(bgce.getStocks().isEmpty()){
+		if(globalBeverageCorpExchange.getStocks().isEmpty()){
 			return BigDecimal.ZERO;
 		}
 		
-		List<Stock> stocks = Lists.newArrayList(bgce.getStocks().values());
+		List<Stock> stocks = Lists.newArrayList(globalBeverageCorpExchange.getStocks().values());
 		return geometricMean.compute(stocks);
 	}
 
