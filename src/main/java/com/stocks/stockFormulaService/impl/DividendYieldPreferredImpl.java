@@ -1,6 +1,7 @@
 package com.stocks.stockFormulaService.impl;
 
 import java.math.BigDecimal;
+import com.stocks.common.StockConstants;
 import com.stocks.core.Stock;
 import com.stocks.enums.StockType;
 import com.stocks.stockFormulaService.StockFormulaService;
@@ -30,7 +31,9 @@ public class DividendYieldPreferredImpl implements StockFormulaService {
 		}
 
 		if(! BigDecimal.ZERO.equals(result)){
-			result = result.divide(tickerPrice, 9, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+			result = result
+					.divide(tickerPrice, StockConstants.DECIMALS, StockConstants.ROUNDING_MODE)
+					.stripTrailingZeros();
 		}
 		return result;
 	}

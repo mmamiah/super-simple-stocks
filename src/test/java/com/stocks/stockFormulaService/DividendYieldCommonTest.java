@@ -4,10 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import com.stocks.core.Stock;
+import com.stocks.enums.StockSymbol;
 import com.stocks.enums.StockType;
+import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,9 @@ public class DividendYieldCommonTest {
 	@Autowired
 	@Qualifier("dividendYieldCommonImpl")
 	private StockFormulaService dividendYieldCommonService;
+
+	@Autowired
+	private GlobalBeverageCorporationImpl globalBeverageCorp;
 
 
 	@Test
@@ -66,28 +69,26 @@ public class DividendYieldCommonTest {
 	public void shouldComputeWhenTickerPriceGreaterThanZeroAndNoFixedDividend(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.valueOf(213.15);
-		Stock stock = new Stock("POP", StockType.COMMON, BigDecimal.valueOf(8), BigDecimal.ONE, BigDecimal.valueOf(100));
+		Stock stockALE = globalBeverageCorp.findStock(StockSymbol.ALE);
 
 		// Act 
-		BigDecimal result = dividendYieldCommonService.computeValue(tickerPrice, stock);
+		BigDecimal result = dividendYieldCommonService.computeValue(tickerPrice, stockALE);
 
 		// Assert
-		NumberFormat formatter = new DecimalFormat("#0.00000");
-		assertThat(formatter.format(result.doubleValue()), is("0,03753"));
+		assertThat(result.doubleValue(), is(0.108));
 	}
 
 	@Test
 	public void shouldComputeWhenTickerPriceGreaterThanZeroAndFixedDividend(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.valueOf(213.15);
-		Stock stock = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 
 		// Act 
-		BigDecimal result = dividendYieldCommonService.computeValue(tickerPrice, stock);
+		BigDecimal result = dividendYieldCommonService.computeValue(tickerPrice, stockGIN);
 
 		// Assert
-		NumberFormat formatter = new DecimalFormat("#0.00000");
-		assertThat(formatter.format(result.doubleValue()), is("0,03753"));
+		assertThat(result.doubleValue(), is(0.038));
 	}
 	
 }

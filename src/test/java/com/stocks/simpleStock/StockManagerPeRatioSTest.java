@@ -7,7 +7,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import com.stocks.core.Stock;
-import com.stocks.enums.StockType;
+import com.stocks.enums.StockSymbol;
+import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
+import com.stocks.simpleStock.impl.SuperSimpleStockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class StockManagerPeRatioSTest {
 
 	@Autowired
 	private SuperSimpleStockManager stockManager;
+
+	@Autowired
+	private GlobalBeverageCorporationImpl globalBeverageCorp;
 
 	@Test
 	public void shouldReturnZeroWhenEmptyStock(){
@@ -41,8 +46,8 @@ public class StockManagerPeRatioSTest {
 	@Test
 	public void shouldReturnZeroWhenStockSymbolAndTickerPricesIsNull(){
 		// Arrange
-		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockGIN = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
+		BigDecimal tickerPrice = null;
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 
 		// Act
 		BigDecimal result = stockManager.calculatePeRatio(tickerPrice, stockGIN);
@@ -66,28 +71,28 @@ public class StockManagerPeRatioSTest {
 	public void shouldCalculatePeRatioWhenSingleTick(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockALE = new Stock("ALE", StockType.COMMON, BigDecimal.valueOf(23), BigDecimal.ONE, BigDecimal.valueOf(60));
+		Stock stockALE = globalBeverageCorp.findStock(StockSymbol.ALE);
 
 		// Act
 		BigDecimal result = stockManager.calculatePeRatio(BigDecimal.valueOf(7.58), stockALE);
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0.329565217));
+		assertThat(result.doubleValue(), is(0.33));
 	}
 
 	@Test
 	public void shouldCalculatePeRatioWhenStockIsJOE(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.valueOf(1.62);
-		Stock stockJOE = new Stock("JOE", StockType.COMMON, BigDecimal.valueOf(13), BigDecimal.ONE, BigDecimal.valueOf(250));
+		Stock stockJOE = globalBeverageCorp.findStock(StockSymbol.JOE);
 
 		// Act
 		BigDecimal result = stockManager.calculatePeRatio(tickerPrice, stockJOE);
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0.070434783));
+		assertThat(result.doubleValue(), is(0.125));
 	}
 
 }

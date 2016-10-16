@@ -1,6 +1,7 @@
 package com.stocks.stockFormulaService.impl;
 
 import java.math.BigDecimal;
+import com.stocks.common.StockConstants;
 import com.stocks.core.Stock;
 import com.stocks.enums.StockType;
 import com.stocks.stockFormulaService.StockFormulaService;
@@ -29,6 +30,8 @@ public class PeRatioImpl implements StockFormulaService {
 		if(!validTickerPrice || !validStockSymbol){
 			return BigDecimal.ZERO;
 		}
-		return tickerPrice.divide(stock.getLastDividend(), 9, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+		return tickerPrice
+				.divide(stock.getLastDividend(), StockConstants.DECIMALS, StockConstants.ROUNDING_MODE)
+				.stripTrailingZeros();
 	}
 }

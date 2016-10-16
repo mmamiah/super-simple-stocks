@@ -2,6 +2,7 @@ package com.stocks.core;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import com.stocks.common.StockConstants;
 import com.stocks.enums.BuySellIndicator;
 
 /**
@@ -60,7 +61,7 @@ public class Trade {
 	}
 
 	public BigDecimal getPrice() {
-		return price;
+		return price.setScale(StockConstants.DECIMALS, StockConstants.ROUNDING_MODE);
 	}
 
 	public void setPrice(BigDecimal price) {

@@ -6,11 +6,12 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import com.stocks.core.Stock;
 import com.stocks.enums.BuySellIndicator;
-import com.stocks.enums.StockType;
+import com.stocks.enums.StockSymbol;
+import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
+import com.stocks.simpleStock.impl.SuperSimpleStockManager;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * System Test for SuperSimpleStockManager.calculateGeometricMean()
+ * System Test for SuperSimpleStockManager.calculateBgceGeometricMean()
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/super-simple-stock-test-context.xml")
@@ -28,9 +29,19 @@ public class StockManagerGeometricMeanSTest {
 
 	@Autowired
 	private SuperSimpleStockManager stockManager;
+
+	@Autowired
+	private GlobalBeverageCorporationImpl globalBeverageCorp;
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
+	
+	private int quantityOfShare;
+	
+	@Before
+	public void init(){
+		quantityOfShare = 100;
+	}
 
 	@Test
 	public void shouldThrowNPEWhenStockIsNullAndIndicatorIsNone(){
@@ -38,57 +49,56 @@ public class StockManagerGeometricMeanSTest {
 		exception.expect(NullPointerException.class);
 		
 		// Arrange
-		stockManager.recordTrade(null, BuySellIndicator.NONE, BigDecimal.ONE);
+		stockManager.recordTrade(null, BuySellIndicator.NONE, BigDecimal.ONE, quantityOfShare);
 
 		// Act
-		BigDecimal result = stockManager.calculateGeometricMean();
+		BigDecimal result = stockManager.calculateBgceGeometricMean();
 
 	}
 
 	@Test
-	public void shouldReturnZeroWhenEmptyStock(){
+	public void shouldReturnPriceWhenEmptyStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		stockManager.recordTrade(new Stock(), BuySellIndicator.NONE, tickerPrice);
+		stockManager.recordTrade(new Stock(), BuySellIndicator.NONE, tickerPrice, quantityOfShare);
 
 		// Act
-		BigDecimal result = stockManager.calculateGeometricMean();
+		BigDecimal result = stockManager.calculateBgceGeometricMean();
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0d));
+		assertThat(result.doubleValue(), is(108.447));
 	}
 
 	@Test
-	public void shouldCalculateGeoMeanWhenSingleTrade(){
+	public void shouldCalculateGeoMeanWhenSingleStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.valueOf(1.265);
-		Stock stockGIN = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
-		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265));
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
+		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
 
 		// Act
-		BigDecimal result = stockManager.calculateGeometricMean();
+		BigDecimal result = stockManager.calculateBgceGeometricMean();
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(1.265));
+		assertThat(result.doubleValue(), is(108.447));
 	}
 
 	@Test
-	public void shouldCalculateGeoMeanWhenMultipleTrade(){
+	public void shouldCalculateGeoMeanWhenMultipleStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockGIN = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
-		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265));
-		stockManager.recordTrade(stockGIN, BuySellIndicator.SELL, BigDecimal.valueOf(1.863));
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
+		stockManager.recordTrade(stockGIN, BuySellIndicator.BUY, BigDecimal.valueOf(1.265), quantityOfShare);
+		stockManager.recordTrade(stockGIN, BuySellIndicator.SELL, BigDecimal.valueOf(1.863), quantityOfShare);
 
 		// Act
-		BigDecimal result = stockManager.calculateGeometricMean();
+		BigDecimal result = stockManager.calculateBgceGeometricMean();
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		NumberFormat formatter = new DecimalFormat("#0.00000");
-		assertThat(formatter.format(result.doubleValue()), is("1,53515"));
+		assertThat(result.doubleValue(), is(108.447));
 	}
 
 }

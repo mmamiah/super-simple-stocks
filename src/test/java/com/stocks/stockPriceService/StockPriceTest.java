@@ -1,4 +1,4 @@
-package com.stocks.shareIndexService;
+package com.stocks.stockPriceService;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -24,8 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class StockPriceTest {
 
 	@Autowired
-	@Qualifier("stockPriceImpl")
-	private ShareIndexService stockPriceService;
+	private StockPriceService stockPriceService;
 
 	@Test
 	public void shouldComputeStockPriceWhenTradeListIsNull(){

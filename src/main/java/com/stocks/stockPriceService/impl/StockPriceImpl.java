@@ -1,10 +1,10 @@
-package com.stocks.shareIndexService.impl;
+package com.stocks.stockPriceService.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
+import com.stocks.common.StockConstants;
 import com.stocks.core.Trade;
-import com.stocks.shareIndexService.ShareIndexService;
+import com.stocks.stockPriceService.StockPriceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * Stock Price Implementation
  */
 @Service
-public class StockPriceImpl implements ShareIndexService {
+public class StockPriceImpl implements StockPriceService {
 
 	@Override
 	public BigDecimal compute(List<Trade> trades) {
@@ -31,7 +31,9 @@ public class StockPriceImpl implements ShareIndexService {
 		BigDecimal result = BigDecimal.ZERO;
 		if(sumOfQuantities != 0){
 			BigDecimal bgQty = BigDecimal.valueOf(sumOfQuantities);
-			result = stockPriceQuantitySum.divide(bgQty, 9, RoundingMode.HALF_UP).stripTrailingZeros();
+			result = stockPriceQuantitySum
+					.divide(bgQty, StockConstants.DECIMALS, StockConstants.ROUNDING_MODE)
+					.stripTrailingZeros();
 		}
 		
 		return result;

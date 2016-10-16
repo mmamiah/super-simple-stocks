@@ -7,7 +7,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import com.stocks.core.Stock;
-import com.stocks.enums.StockType;
+import com.stocks.enums.StockSymbol;
+import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
+import com.stocks.simpleStock.impl.SuperSimpleStockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class StockManagerDividendYieldSTest {
 	
 	@Autowired
 	private SuperSimpleStockManager stockManager;
+
+	@Autowired
+	private GlobalBeverageCorporationImpl globalBeverageCorp;
 	
 	@Test
 	public void shouldReturnZeroWhenEmptyStock(){
@@ -41,11 +46,11 @@ public class StockManagerDividendYieldSTest {
 	@Test
 	public void shouldReturnZeroWhenStockSymbolAndTickerPricesIsNull(){
 		// Arrange
-		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stock = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
+		BigDecimal tickerPrice = null;
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 
 		// Act
-		BigDecimal result = stockManager.calculateDividendYield(tickerPrice, stock);
+		BigDecimal result = stockManager.calculateDividendYield(tickerPrice, stockGIN);
 
 		// Assert
 		assertThat(result, not(nullValue()));
@@ -65,28 +70,27 @@ public class StockManagerDividendYieldSTest {
 	@Test
 	public void shouldCalculateCommonDividendYieldWhenSingleTick(){
 		// Arrange
-		Stock stock = new Stock("ALE", StockType.COMMON, BigDecimal.valueOf(23), BigDecimal.ONE, BigDecimal.valueOf(60));
+		Stock stockALE = globalBeverageCorp.findStock(StockSymbol.ALE);
 
 		// Act
-		BigDecimal result = stockManager.calculateDividendYield(BigDecimal.valueOf(1.56), stock);
+		BigDecimal result = stockManager.calculateDividendYield(BigDecimal.valueOf(1.56), stockALE);
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(14.743589744));
+		assertThat(result.doubleValue(), is(14.744));
 	}
 
 	@Test
 	public void shouldCalculatePreferredDividendYieldWhenSingleTick(){
 		// Arrange
-		Stock stockGIN = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
-
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 
 		// Act
 		BigDecimal result = stockManager.calculateDividendYield(BigDecimal.valueOf(3.25), stockGIN);
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0.615384615));
+		assertThat(result.doubleValue(), is(0.615));
 	}
 
 }

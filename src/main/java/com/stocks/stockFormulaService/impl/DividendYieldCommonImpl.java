@@ -1,6 +1,7 @@
 package com.stocks.stockFormulaService.impl;
 
 import java.math.BigDecimal;
+import com.stocks.common.StockConstants;
 import com.stocks.core.Stock;
 import com.stocks.enums.StockType;
 import com.stocks.stockFormulaService.StockFormulaService;
@@ -26,7 +27,9 @@ public class DividendYieldCommonImpl implements StockFormulaService {
 	public BigDecimal computeValue(BigDecimal tickerPrice, Stock stock) {
 		BigDecimal result = BigDecimal.ZERO;
 		if(tickerPrice != null && BigDecimal.ZERO.compareTo(tickerPrice) != 0){
-			result = stock.getLastDividend().divide(tickerPrice, 9, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+			result = stock.getLastDividend()
+					.divide(tickerPrice, StockConstants.DECIMALS, StockConstants.ROUNDING_MODE)
+					.stripTrailingZeros();
 		}
 
 		return result;

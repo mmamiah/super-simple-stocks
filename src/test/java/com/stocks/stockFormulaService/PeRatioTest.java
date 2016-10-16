@@ -5,7 +5,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import com.stocks.core.Stock;
+import com.stocks.enums.StockSymbol;
 import com.stocks.enums.StockType;
+import com.stocks.simpleStock.impl.GlobalBeverageCorporationImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class PeRatioTest {
 	@Autowired
 	@Qualifier("peRatioImpl")
 	private StockFormulaService peRatioService;
+
+	@Autowired
+	private GlobalBeverageCorporationImpl globalBeverageCorp;
 
 	@Test
 	public void shouldConfirmFormulaName() {
@@ -92,7 +97,7 @@ public class PeRatioTest {
 	public void shouldReturnZeroWhenPriceIsDefinedAndSymbolWithoutFixedDividend() {
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockTEA = new Stock("TEA", StockType.COMMON, BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.valueOf(100));
+		Stock stockTEA = globalBeverageCorp.findStock(StockSymbol.TEA);
 
 		// Act
 		BigDecimal result = peRatioService.computeValue(tickerPrice, stockTEA);
@@ -106,7 +111,7 @@ public class PeRatioTest {
 	public void shouldReturnRatioWhenPriceIsDefinedAndSymbolWithFixedDividend() {
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
-		Stock stockGIN = new Stock("GIN", StockType.PREFERRED, BigDecimal.valueOf(8), BigDecimal.valueOf(0.02), BigDecimal.valueOf(100));
+		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 
 		// Act
 		BigDecimal result = peRatioService.computeValue(tickerPrice, stockGIN);

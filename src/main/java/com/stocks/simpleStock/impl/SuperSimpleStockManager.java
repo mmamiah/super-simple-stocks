@@ -1,9 +1,10 @@
-package com.stocks.simpleStock;
+package com.stocks.simpleStock.impl;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.google.common.collect.Lists;
@@ -11,9 +12,12 @@ import com.google.common.collect.Maps;
 import com.stocks.core.Stock;
 import com.stocks.core.Trade;
 import com.stocks.enums.BuySellIndicator;
+import com.stocks.enums.StockSymbol;
 import com.stocks.enums.StockType;
-import com.stocks.shareIndexService.ShareIndexService;
+import com.stocks.geometricMean.GeometricMeanService;
+import com.stocks.simpleStock.StockExchange;
 import com.stocks.stockFormulaService.StockFormulaService;
+import com.stocks.stockPriceService.StockPriceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,16 +36,16 @@ public class SuperSimpleStockManager {
 	private StockFormulaService peRatioService;
 	
 	@Autowired
-	@Qualifier("geometricMeanImpl")
-	private ShareIndexService geometricMean;
+	private GeometricMeanService geometricMean;
 
 	@Autowired
-	@Qualifier("stockPriceImpl")
-	private ShareIndexService stockPriceService;
+	private StockPriceService stockPriceService;
+	
+	@Autowired
+	private StockExchange bgce;
 	
 	/** Map<StockSymbol, Deque<Trade>> */
-	private Map<String, Deque<Trade>> tradeHistory = Maps.newHashMap();
-//	tradeHistory = Lists.newLinkedList();
+	private Map<StockSymbol, Deque<Trade>> tradeHistory = Maps.newHashMap();
 
 	private Map<StockType, StockFormulaService> stockFormulas = Maps.newHashMap();
 	
@@ -54,7 +58,7 @@ public class SuperSimpleStockManager {
 	
 	/* Calculate The Dividend Yield for a given Stock */
 	public BigDecimal calculateDividendYield(BigDecimal tickerPrice, Stock stock){
-		StockFormulaService formula = stockFormulas.get(stock.getType());
+		StockFormulaService formula = stockFormulas.get(stock.getSymbol().getType());
 		return formula.computeValue(tickerPrice, stock);
 	}
 
@@ -64,15 +68,10 @@ public class SuperSimpleStockManager {
 	}
 
 	/* Record a Trade for a given StockSymbol */
-	public void recordTrade(Stock stock, BuySellIndicator indicator, BigDecimal tickerPrice){
+	public void recordTrade(Stock stock, BuySellIndicator indicator, BigDecimal tickerPrice, int quantityOfShare){
 		Deque<Trade> trades = tradeHistory.get(stock.getSymbol());
-		int quantityOfShare = 0;
-		if(CollectionUtils.isNotEmpty(trades)){
-			quantityOfShare = trades.size();
-		}
-		else if (trades == null){
+		if(trades == null){
 			trades = Lists.newLinkedList();
-			quantityOfShare = 1;
 			tradeHistory.put(stock.getSymbol(), trades);
 		}
 		Trade trade = new Trade(tickerPrice, indicator, quantityOfShare);
@@ -86,34 +85,43 @@ public class SuperSimpleStockManager {
 			return BigDecimal.ZERO;
 		}
 
-		List<Trade> max15minAgedTrades = Lists.newArrayList();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MINUTE, -15); // Subtract 15 min in actual time
-		for(Trade trade: trades){
-			if(isValidTradeAge(trade, cal.getTime())){
-				max15minAgedTrades.add(trade);
-			}
-		}
+		List<Trade> max15minAgedTrades = retrieveMax15MinAgedTrade(trades);
 		
 		return stockPriceService.compute(max15minAgedTrades);
 		
 	}
 
-	/* Calculate the Geometric Mean on based Stock */
-	public BigDecimal calculateGeometricMean(){
-		List<Trade> foundTrades = Lists.newArrayList();
-		for(String symbol: tradeHistory.keySet()){
-			Deque<Trade> trades = tradeHistory.get(symbol);
-			if(CollectionUtils.isNotEmpty(trades)){
-				foundTrades.addAll(trades);
-			}
+	/* Calculate the Geometric Mean on based BGCE Stocks */
+	public BigDecimal calculateBgceGeometricMean(){
+		if(bgce.getStocks().isEmpty()){
+			return BigDecimal.ZERO;
 		}
 		
-		return geometricMean.compute(foundTrades);
+		List<Stock> stocks = Lists.newArrayList(bgce.getStocks().values());
+		return geometricMean.compute(stocks);
 	}
 
-	private static boolean isValidTradeAge(Trade trade, Date deadLine) {
+	private static List<Trade> retrieveMax15MinAgedTrade(Deque<Trade> trades) {
+		List<Trade> result = Lists.newArrayList();
+		Date now = new Date();
+		boolean is15MinAge = true;
+		Iterator<Trade> tradeIterator = trades.descendingIterator();
+		while(tradeIterator.hasNext() && is15MinAge){
+			Trade trade = tradeIterator.next();
+			is15MinAge = isMax15MinAgedTrade(trade, now);
+			if(is15MinAge){
+				result.add(trade);
+			}
+		}
+		return result;
+	}
+
+	private static boolean isMax15MinAgedTrade(Trade trade, Date now) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MINUTE, -15); // Subtract 15 min in actual time
+		Date deadLine = cal.getTime();
+		
 		boolean isAfter = trade.getTimeStamp().after(deadLine);
 		boolean isEqual = trade.getTimeStamp().equals(deadLine);
 		return isAfter || isEqual;
