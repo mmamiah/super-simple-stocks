@@ -76,7 +76,7 @@ public class StockManagerCalculateStockPriceSTest {
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0d));
+		assertThat(result, is(BigDecimal.ZERO));
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class StockManagerCalculateStockPriceSTest {
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0d));
+		assertThat(result, is(BigDecimal.ZERO));
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class StockManagerCalculateStockPriceSTest {
 
 		// Assert
 		assertThat(result, not(nullValue()));
-		assertThat(result.doubleValue(), is(0d));
+		assertThat(result, is(BigDecimal.ZERO));
 	}
 
 	@Test

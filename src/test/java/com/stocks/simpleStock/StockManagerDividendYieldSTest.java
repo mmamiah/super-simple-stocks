@@ -68,7 +68,7 @@ public class StockManagerDividendYieldSTest {
 	}
 
 	@Test
-	public void shouldCalculateCommonDividendYieldWhenSingleTick(){
+	public void shouldCalculateDividendYieldWhenCommonStock(){
 		// Arrange
 		Stock stockALE = globalBeverageCorp.findStock(StockSymbol.ALE);
 
@@ -81,7 +81,7 @@ public class StockManagerDividendYieldSTest {
 	}
 
 	@Test
-	public void shouldCalculatePreferredDividendYieldWhenSingleTick(){
+	public void shouldCalculateDividendYieldWhenPreferredStock(){
 		// Arrange
 		Stock stockGIN = globalBeverageCorp.findStock(StockSymbol.GIN);
 

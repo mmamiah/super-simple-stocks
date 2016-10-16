@@ -57,7 +57,7 @@ public class StockManagerGeometricMeanSTest {
 	}
 
 	@Test
-	public void shouldReturnPriceWhenEmptyStock(){
+	public void shouldReturnGeoMeanWhenEmptyStock(){
 		// Arrange
 		BigDecimal tickerPrice = BigDecimal.ONE;
 		stockManager.recordTrade(new Stock(), BuySellIndicator.NONE, tickerPrice, quantityOfShare);

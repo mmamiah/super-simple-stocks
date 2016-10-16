@@ -68,7 +68,7 @@ public class PeRatioTest {
 	}
 
 	@Test
-	public void shouldReturnZeroWhenPriceIsNullAndSymbolIsNone() {
+	public void shouldReturnZeroWhenPriceIsNullAndEmptyStock() {
 		// Arrange
 		BigDecimal tickerPrice = null;
 
