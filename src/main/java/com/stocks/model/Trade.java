@@ -25,8 +25,7 @@ public class Trade {
 	}
 
 	public Trade(StockSymbol symbol, BigDecimal price, BuySellIndicator indicator, int quantityOfShare){
-		if(symbol == null) throw new IllegalArgumentException("StockSymbol cannot be Null");
-		this.symbol = symbol;
+		setSymbol(symbol);
 		setPrice(price);
 		setIndicator(indicator);
 		setQuantityOfShare(quantityOfShare);
@@ -34,7 +33,7 @@ public class Trade {
 	}
 
 	public Trade(StockSymbol symbol, BigDecimal price, int quantityOfShare){
-		this.symbol = symbol;
+		setSymbol(symbol);
 		setPrice(price);
 		setIndicator(BuySellIndicator.NONE);
 		setQuantityOfShare(quantityOfShare);
@@ -46,6 +45,7 @@ public class Trade {
 	}
 
 	public void setSymbol(StockSymbol symbol) {
+		if(symbol == null) throw new IllegalArgumentException("StockSymbol cannot be Null");
 		this.symbol = symbol;
 	}
 
